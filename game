@@ -1,0 +1,92 @@
+#include <MD_MAX72xx.h>
+#include <SPI.h>
+
+int xPin = A0;
+int yPin = A1;
+int pressed = 7;
+int x[] = {0,1,2,3,4,5,6,7};
+int y[] = {1,2,4,8,16,32,64,128};
+int XData = 0;
+int YData = 0;
+int tempo = 500;
+int dirc = 0;
+int i = 3;
+int j= 3;
+
+#define HARDWARE_TYPE MD_MAX72XX::FC16_HW
+
+#define MAX_DEVICES 1
+#define CS_PIN 3
+
+
+MD_MAX72XX myDisplay = MD_MAX72XX (HARDWARE_TYPE, CS_PIN, MAX_DEVICES);
+void setup() {
+ 
+  myDisplay.begin();
+  Serial.begin(9600);
+
+}
+
+void loop() {
+  
+  
+  XData = analogRead(xPin);
+  YData = analogRead(yPin);
+  Serial.print(XData, DEC);
+  Serial.print("\t");
+  Serial.println(YData, DEC);
+  //myDisplay.setColumn(x[i],y[j]);
+  if (XData < 500){
+    dirc = 1;
+  }
+  else if(XData > 600){
+    dirc = 3;
+  }
+  else if(YData < 500){
+    dirc = 2;
+  }
+  else if(YData > 600){
+    dirc = 4;
+  }
+  switch (dirc){
+    case 0:
+      myDisplay.setColumn(x[i],y[j]);
+      break;
+    case 1:
+      if (i == 0){
+        myDisplay.setColumn(x[i],y[j]);
+      }
+      else{
+        myDisplay.setColumn(x[i-1],y[j]);
+      }
+      break;
+    case 3:
+      if (i == 7){
+        myDisplay.setColumn(x[i],y[j]);
+      }
+      else{
+        myDisplay.setColumn(x[i+1],y[j]);
+      }
+      break;
+    case 2:
+      if (j == 0){
+        myDisplay.setColumn(x[i],y[j]);
+      }
+      else{
+        myDisplay.setColumn(x[i],y[j+1]);
+      }
+      break;
+    case 4:
+      if (j == 7){
+        myDisplay.setColumn(x[i],y[j]);
+      }
+      else{
+        myDisplay.setColumn(x[i],y[j-1]);
+      }
+      break;
+  }
+  delay(tempo);
+
+  
+
+}
